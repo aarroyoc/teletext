@@ -12,6 +12,7 @@ jobs:
         with:
           repository: mthom/scryer-prolog
           path: scryer-prolog
+      - uses: extractions/setup-just@v1          
       - name: Compile Scryer Prolog
         run: cargo build --release
         working-directory: scryer-prolog
