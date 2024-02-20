@@ -22,43 +22,35 @@ fmt_text_(Text, Styles) -->
     Text,
     ansi_esc, "[m".
 
-fmt_color_(black, "0").
-fmt_color_(red, "1").
-fmt_color_(green, "2").
-fmt_color_(yellow, "3").
-fmt_color_(blue, "4").
-fmt_color_(magenta, "5").
-fmt_color_(cyan, "6").
-fmt_color_(white, "7").
+fmt_color_(black) --> "0".
+fmt_color_(red) --> "1".
+fmt_color_(green) --> "2".
+fmt_color_(yellow) --> "3".
+fmt_color_(blue) --> "4".
+fmt_color_(magenta) --> "5".
+fmt_color_(cyan) --> "6".
+fmt_color_(white) --> "7".
 
-fmt_style(bright, "1").
-fmt_style(dim, "2").
-fmt_style(italic, "3").
-fmt_style(underline, "4").
-fmt_style(reverse, "7").
-fmt_style(fg_color(Color), ['3'|C]) :-
-    fmt_color_(Color, C).
-fmt_style(fg_color(C), X) :-
-    C in 0..255,
-    number_chars(C, N),
-    append("38;5;", N, X).
-fmt_style(fg_bright_color(Color), ['9'|C]) :-
-    fmt_color_(Color, C).
-fmt_style(bg_color(Color), ['4'|C]) :-
-    fmt_color_(Color, C).
-fmt_style(bg_color(C), X) :-
-    C in 0..255,
-    number_chars(C, N),
-    append("48;5;", N, X).
-fmt_style(bg_bright_color(Color), ['10'|C]) :-
-    fmt_color_(Color, C).
+fmt_style(bright) --> "1".
+fmt_style(dim) --> "2".
+fmt_style(italic) --> "3".
+fmt_style(underline) --> "4".
+fmt_style(reverse) --> "7".
+fmt_style(fg_color(Color)) --> "3", fmt_color_(Color).
+fmt_style(fg_color(C)) -->
+    { C in 0..255 },
+    format_("38;5;~d", [C]).
+fmt_style(fg_bright_color(Color)) --> "9", fmt_color_(Color).
+fmt_style(bg_color(Color)) --> "4", fmt_color_(Color).
+fmt_style(bg_color(C)) -->
+    { C in 0..255 },
+    format_("48;5;~d", [C]).
+fmt_style(bg_bright_color(Color)) --> "10", fmt_color_(Color).
 
-fmt_styles_([X]) -->
-    { fmt_style(X, Cs) },
-    Cs.
+fmt_styles_([X]) --> fmt_style(X).
 fmt_styles_([X|Xs]) -->
-    { fmt_style(X, Cs), length(Xs, N), N #>= 0 },
-    Cs,
+    { length(Xs, N), N #>= 0 },
+    fmt_style(X),
     ";",
     fmt_styles_(Xs).
 
